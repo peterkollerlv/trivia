@@ -2,10 +2,12 @@ exports = typeof window !== "undefined" && window !== null ? window : global;
 
 var outputLog = '';
 var logToOutput = function (entry) {
-  var textnode = document.createTextNode(entry); 
-  var lineBreak = document.createElement("BR"); 
-  document.getElementById('gameOutput').appendChild(textnode);
-  document.getElementById('gameOutput').appendChild(lineBreak);
+  if (document) {
+    var textnode = document.createTextNode(entry);
+    var lineBreak = document.createElement("BR");
+    document.getElementById('gameOutput').appendChild(textnode);
+    document.getElementById('gameOutput').appendChild(lineBreak);
+  }
   outputLog += entry + '\n';
 }
 
@@ -15,7 +17,7 @@ export GameStart = function(numberOfPlayers, playerRolls, goodAnswer){
 }
 */
 var Game = function (numberOfPlayers) {
-  var players = new Array(numberOfPlayers);
+  var players = new Array();
   var places = new Array(numberOfPlayers);
   var purses = new Array(numberOfPlayers);
   var inPenaltyBox = new Array(numberOfPlayers);
@@ -30,7 +32,7 @@ var Game = function (numberOfPlayers) {
   var isGettingOutOfPenaltyBox = false;
 
   var didPlayerWin = function () {
-    return !(purses[currentPlayer] == 6)
+    return (purses[currentPlayer] == 6)
   };
 
   var movePlayer = function (roll) {
@@ -48,6 +50,7 @@ var Game = function (numberOfPlayers) {
     if (!inPenaltyBox[currentPlayer]) {
       correctAnswer();
     }
+    return didPlayerWin();
   };
 
   var nextPlayer = function () {
@@ -63,17 +66,13 @@ var Game = function (numberOfPlayers) {
     logToOutput(players[currentPlayer] + " now has " +
       purses[currentPlayer] + " Gold Coins.");
   }
-  
+
   var wrongAnswer = function () {
     logToOutput('Question was incorrectly answered');
     logToOutput(players[currentPlayer] + " was sent to the penalty box");
     inPenaltyBox[currentPlayer] = true;
-  
-    currentPlayer += 1;
-    if (currentPlayer == players.length) {
-      currentPlayer = 0;
-    }
-    return true;
+    nextPlayer();
+    return false;
   };
 
   var currentCategory = function () {
@@ -149,6 +148,7 @@ var Game = function (numberOfPlayers) {
     } else {
       notAWinner = wasCorrectlyAnswered();
     }
+    return notAWinner;
   };
 
   this.roll = function (roll, counter) {
@@ -164,7 +164,7 @@ var Game = function (numberOfPlayers) {
 
         logToOutput(players[currentPlayer] + "'s new location is " + places[currentPlayer]);
         logToOutput("The category is " + currentCategory());
-        askQuestion(counter);
+        return askQuestion(counter);
       } else {
         logToOutput(players[currentPlayer] + " is not getting out of the penalty box");
         isGettingOutOfPenaltyBox = false;
@@ -174,14 +174,10 @@ var Game = function (numberOfPlayers) {
 
       logToOutput(players[currentPlayer] + "'s new location is " + places[currentPlayer]);
       logToOutput("The category is " + currentCategory());
-      askQuestion(counter);
+      return askQuestion(counter);
     }
   };
 
-
-  var winner = didPlayerWin();
-  nextPlayer();
-  return winner;
 };
 
 
@@ -224,12 +220,11 @@ exports.gameStart = function (numberOfPlayers, playerRolls, goodAnswer) {
     // Math.floor(Math.random() * 6) + 1
     // Math.floor(Math.random() * 10) == 7
     // var roll = 
-    game.roll(playerRolls[counter], counter);
-
-
+    notAWinner = game.roll(playerRolls[counter], counter);
     counter++;
-  } while (notAWinner);
-  hash = crypto.createHash('md5').update(outputLog).digest('hex');
+console.log(notAWinner);
+  } while (!notAWinner);
+  // hash = crypto.createHash('md5').update(outputLog).digest('hex');
   console.log(outputLog);
   return outputLog.replace(/ /g, '');
 }
