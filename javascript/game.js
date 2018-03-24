@@ -227,4 +227,5 @@ console.log(notAWinner);
   // hash = crypto.createHash('md5').update(outputLog).digest('hex');
   console.log(outputLog);
   return outputLog.replace(/ /g, '');
+  
 }
