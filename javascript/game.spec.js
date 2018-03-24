@@ -16,7 +16,7 @@ describe("The test environment", function () {
   });
 });
 
-describe("NUmber of player is 3", function () {
+describe("Number of player is 3", function () {
   it("should pass", function () {
     var hash = gameStart(3, [4, 6, 2, 3], 7);
     expect(`Player0 was added

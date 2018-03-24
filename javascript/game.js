@@ -1,10 +1,11 @@
 exports = typeof window !== "undefined" && window !== null ? window : global;
 
-var crypto = require('crypto');
-var shasum = crypto.createHash('sha1');
-
 var outputLog = '';
 var logToOutput = function (entry) {
+  var textnode = document.createTextNode(entry); 
+  var lineBreak = document.createElement("BR"); 
+  document.getElementById('gameOutput').appendChild(textnode);
+  document.getElementById('gameOutput').appendChild(lineBreak);
   outputLog += entry + '\n';
 }
 
@@ -13,11 +14,11 @@ export GameStart = function(numberOfPlayers, playerRolls, goodAnswer){
   return new Game(numberOfPlayers, playerRolls, goodAnswer);
 }
 */
-var Game = function () {
-  var players = new Array();
-  var places = new Array(6);
-  var purses = new Array(6);
-  var inPenaltyBox = new Array(6);
+var Game = function (numberOfPlayers) {
+  var players = new Array(numberOfPlayers);
+  var places = new Array(numberOfPlayers);
+  var purses = new Array(numberOfPlayers);
+  var inPenaltyBox = new Array(numberOfPlayers);
 
   var popQuestions = new Array();
   var scienceQuestions = new Array();
@@ -211,7 +212,7 @@ exports.gameStart = function (numberOfPlayers, playerRolls, goodAnswer) {
 
   var hash = '';
   var notAWinner = false;
-  var game = new Game();
+  var game = new Game(numberOfPlayers);
 
   for (i = 0; i < numberOfPlayers; i++) {
     game.add('Player' + i);
